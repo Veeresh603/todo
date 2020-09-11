@@ -2,6 +2,7 @@ import React from "react";
 import "./styles.css";
 import "bootstrap/dist/css/bootstrap.css";
 import TodoBanner from "./components/TodoBanner";
+import TodoCreator from "./components/TodoCreator";
 
 export default class App extends React.Component {
   constructor(props) {
@@ -22,17 +23,10 @@ export default class App extends React.Component {
       newItemText: e.target.value
     });
   };
-  createNewTodo = () => {
-    if (
-      !this.state.todoItems.find(
-        (item) => item.action === this.state.newItemText
-      )
-    ) {
+  createNewTodo = (task) => {
+    if (!this.state.todoItems.find((item) => item.action === task)) {
       this.setState({
-        todoItems: [
-          ...this.state.todoItems,
-          { action: this.state.newItemText, done: false }
-        ],
+        todoItems: [...this.state.todoItems, { action: task, done: false }],
         newItemText: ""
       });
     }
@@ -63,20 +57,8 @@ export default class App extends React.Component {
         <TodoBanner user={username} todo={todoItems} />
 
         <div className="container-fluid d-flex justify-content-center">
-          <div className="my-1">
-            <input
-              className="form-control"
-              value={newItemText}
-              onChange={this.updateNewTextValue}
-            />
-          </div>
-          <div className="btn-add">
-            <button
-              className="d-flex btn btn-primary mt-1 mb-1 "
-              onClick={this.createNewTodo}
-            >
-              Add
-            </button>
+          <div className="my-1 m-4">
+            <TodoCreator callback={this.createNewTodo} />
           </div>
         </div>
         <table className="table table-striped table-bordered">
