@@ -59,7 +59,7 @@ export default class App extends React.Component {
               { action: "Collect tickets", done: false },
               { action: "Go to Pub", done: false }
             ],
-            showCompleted: true
+            showCompleted: false
           }
     );
   };
