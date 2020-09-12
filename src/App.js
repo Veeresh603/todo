@@ -16,7 +16,7 @@ export default class App extends React.Component {
         { action: "Collect tickets", done: false },
         { action: "Go to Pub", done: false }
       ],
-      showCompleted: true
+      showCompleted: false
     };
   }
   updateNewTextValue = (e) => {
@@ -26,9 +26,12 @@ export default class App extends React.Component {
   };
   createNewTodo = (task) => {
     if (!this.state.todoItems.find((item) => item.action === task)) {
-      this.setState({
-        todoItems: [...this.state.todoItems, { action: task, done: false }]
-      });
+      this.setState(
+        {
+          todoItems: [...this.state.todoItems, { action: task, done: false }]
+        },
+        () => localStorage.setItem("todos", JSON.stringify(this.state))
+      );
     }
   };
   toggleTodo = (todo) =>
@@ -43,6 +46,23 @@ export default class App extends React.Component {
       .map((item) => (
         <TodoRow key={item.action} item={item} callback={this.toggleTodo} />
       ));
+  componentDidMount = () => {
+    let data = localStorage.getItem("todos");
+    this.setState(
+      data !== null
+        ? JSON.parse(data)
+        : {
+            username: "Veeru",
+            todoItems: [
+              { action: "Buy Flowers", done: false },
+              { action: "Get Store", done: false },
+              { action: "Collect tickets", done: false },
+              { action: "Go to Pub", done: false }
+            ],
+            showCompleted: true
+          }
+    );
+  };
   doneCheck = (checked) => this.setState({ showCompleted: checked });
   render() {
     const { todoItems, username } = this.state;
