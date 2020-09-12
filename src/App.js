@@ -3,6 +3,7 @@ import "./styles.css";
 import "bootstrap/dist/css/bootstrap.css";
 import TodoBanner from "./components/TodoBanner";
 import TodoCreator from "./components/TodoCreator";
+import TodoRow from "./components/TodoRow";
 
 export default class App extends React.Component {
   constructor(props) {
@@ -15,7 +16,7 @@ export default class App extends React.Component {
         { action: "Collect tickets", done: false },
         { action: "Go to Pub", done: false }
       ],
-      newItemText: ""
+      showCompleted: true
     };
   }
   updateNewTextValue = (e) => {
@@ -26,8 +27,7 @@ export default class App extends React.Component {
   createNewTodo = (task) => {
     if (!this.state.todoItems.find((item) => item.action === task)) {
       this.setState({
-        todoItems: [...this.state.todoItems, { action: task, done: false }],
-        newItemText: ""
+        todoItems: [...this.state.todoItems, { action: task, done: false }]
       });
     }
   };
@@ -37,21 +37,15 @@ export default class App extends React.Component {
         item.action === todo.action ? { ...item, done: !item.done } : item
       )
     });
-  todoTableRows = () =>
-    this.state.todoItems.map((item) => (
-      <tr key={item.action}>
-        <td>{item.action}</td>
-        <td>
-          <input
-            type="checkbox"
-            checked={item.done}
-            onChange={() => this.toggleTodo(item)}
-          />
-        </td>
-      </tr>
-    ));
+  todoTableRows = (doneValue) =>
+    this.state.todoItems
+      .filter((item) => item.done === doneValue)
+      .map((item) => (
+        <TodoRow key={item.action} item={item} callback={this.toggleTodo} />
+      ));
+  doneCheck = (checked) => this.setState({ showCompleted: checked });
   render() {
-    const { todoItems, newItemText, username } = this.state;
+    const { todoItems, username } = this.state;
     return (
       <div>
         <TodoBanner user={username} todo={todoItems} />
@@ -68,8 +62,27 @@ export default class App extends React.Component {
               <th>Done</th>
             </tr>
           </thead>
-          <tbody>{this.todoTableRows()}</tbody>
+          <tbody>{this.todoTableRows(false)}</tbody>
         </table>
+        <div className="bg-secondary text-white text-center p-2">
+          <input
+            type="checkbox"
+            isChecked={this.state.showCompleted}
+            onClick={(e) => this.doneCheck(e.target.checked)}
+          />
+          <label>Show Completed Taks</label>
+        </div>
+        {this.state.showCompleted && (
+          <table className="table table-striped table-bordered">
+            <thead>
+              <tr>
+                <th>Descrption</th>
+                <th>Done</th>
+              </tr>
+            </thead>
+            <tbody>{this.todoTableRows(true)}</tbody>
+          </table>
+        )}
       </div>
     );
   }
